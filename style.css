@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #222;
+    color: #eee;
+}
+
+h1 {
+    margin-top: 20px;
+}
+
+#connection {
+    font-size: 14px;
+    color: #aaa;
+}
+
+#status {
+    margin: 10px;
+    font-size: 18px;
+}
+
+/* ---- Disposition plateau + historique ---- */
+#game-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(7, 70px);
+    grid-template-rows: repeat(6, 70px);
+    gap: 5px;
+    justify-content: center;
+    padding: 10px;
+    background: #0055aa;
+    border-radius: 10px;
+}
+
+.cell {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: inset 0 0 5px #000;
+}
+
+.cell:hover {
+    filter: brightness(1.2);
+}
+
+.player-R {
+    background: red;
+}
+
+.player-J {
+    background: yellow;
+}
+
+/* ---- Encadré historique ---- */
+#sidebar {
+    width: 240px;
+    background: #333;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: left;
+    max-height: 470px;
+    overflow-y: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#sidebar h2 {
+    margin-top: 0;
+    font-size: 18px;
+    text-align: center;
+}
+
+#history {
+    font-size: 14px;
+}
+
+.move-entry {
+    padding: 4px 0;
+    border-bottom: 1px solid #444;
+}
+
+#reset-btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #4caf50;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #45a049;
+}
