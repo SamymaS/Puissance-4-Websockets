@@ -1,213 +1,153 @@
-🎮 Puissance 4 Multijoueur – WebSocket & Node.js
+# 🎮 Puissance 4 Multijoueur -- WebSocket & Node.js
 
-Ce projet est une implémentation complète du Puissance 4 jouable en temps réel par deux joueurs via une connexion WebSocket.
+Ce projet est une implémentation complète du **Puissance 4 jouable en
+temps réel** par deux joueurs via WebSocket.\
 Il inclut :
 
-un serveur WebSocket Node.js
+-   un **serveur WebSocket Node.js**
+-   une **interface HTML/CSS**
+-   un **plateau 6×7 interactif**
+-   la **synchronisation en direct** des coups
+-   l'**assignation automatique des rôles**
+-   les **règles officielles du Puissance 4**
+-   un **historique de partie**
+-   un **système strict de tours**
 
-une interface HTML/CSS
+## 📦 Structure du projet
 
-un plateau 6×7 interactif
+    Puissance4/
+    │
+    ├── server.js        # Serveur WebSocket Node.js
+    ├── index.html       # Client (jeu)
+    ├── style.css        # Styles du jeu
+    └── README.md        # Documentation
 
-la synchronisation en direct des coups
+## ⚙️ 1. Installation
 
-l’assignation automatique des rôles :
+Assure-toi d'avoir **Node.js** installé.
 
-Joueur Rouge (R) → premier connecté
+### 1️⃣ Installer les dépendances
 
-Joueur Jaune (J) → deuxième connecté
-
-spectateurs → connexions supplémentaires
-
-les règles réelles du Puissance 4
-
-un historique de partie (début, fin, coups)
-
-un système de tours (on ne peut jouer que ses propres pions, uniquement à son tour)
-
-📦 Structure du projet
-Puissance4/
-│
-├── server.js        # Serveur WebSocket Node.js
-├── index.html       # Client (jeu)
-├── style.css        # Styles du jeu
-└── README.md        # Documentation
-
-⚙️ 1. Installation
-
-Assure-toi d’avoir Node.js installé.
-
-1️⃣ Installe les dépendances
-
-Ouvre un terminal dans le dossier du projet :
-
+``` bash
 npm init -y
 npm install ws
+```
 
-🖥️ 2. Lancer le serveur
+## 🖥️ 2. Lancer le serveur
 
 Le projet utilise :
 
-un serveur WebSocket pour le jeu
+-   un **serveur WebSocket** pour le jeu
+-   un **serveur HTTP** pour servir `index.html`
 
-un petit serveur HTTP pour servir index.html aux joueurs
+### 2️⃣ Lancer le serveur WebSocket
 
-2️⃣ Lancer le serveur WebSocket
+``` bash
 node server.js
-
+```
 
 Tu dois voir :
 
-Serveur Puissance 4 démarré sur ws://localhost:8080
-Client connecté...
+    Serveur Puissance 4 démarré sur ws://localhost:8080
+    Client connecté...
 
-3️⃣ Lancer un serveur HTTP local
+### 3️⃣ Lancer un serveur HTTP local
+
+``` bash
 npx serve . -l 3000
+```
 
+Tu vas obtenir :
 
-Tu vas voir deux URL :
+-   **Local :** http://localhost:3000\
+-   **Network :** http://192.168.X.X:3000
 
-Local:   http://localhost:3000
-Network: http://192.168.X.X:3000
+👉 Pour jouer à plusieurs PC : utilise l'URL **Network**.
 
+## 🌐 3. Jouer à deux (sur 2 PC)
 
-👉 Si tu veux jouer sur deux PC différents, utilise l’URL Network
-(ex : http://192.168.0.15:3000).
+Le client se connecte automatiquement à :
 
-🌐 3. Jouer à deux (sur 2 PC)
-🔥 IMPORTANT
+    ws://<host>:8080
 
-Le fichier index.html se connecte automatiquement à :
+Le `<host>` correspond à `location.hostname`.
 
-ws://<host>:8080
+✔️ Chaque joueur doit ouvrir :\
+**http://IP_DU_SERVEUR:3000**
 
-
-Le <host> est automatiquement la machine qui sert la page (location.hostname).
-
-✔️ Joueur 1 et Joueur 2 doivent tous les deux ouvrir :
-http://IP_DU_SERVEUR:3000
-
-
-Exemple :
-
+Exemple :\
 http://192.168.0.15:3000
 
-⚠️ Il ne faut pas ouvrir file:///index.html lorsqu’on joue à plusieurs.
-🎮 4. Règles du jeu Puissance 4 (version intégrée)
+❌ Ne pas ouvrir `file:///index.html` en mode multijoueur.
 
-Le plateau fait 6 lignes × 7 colonnes
+## 🎮 4. Règles du jeu intégrées
 
-Le joueur rouge (R) commence toujours
+-   Plateau : **6 lignes × 7 colonnes**
+-   **Rouge (R)** commence toujours
+-   Les joueurs jouent à tour de rôle
+-   Un clic = le pion tombe dans la colonne
+-   Un joueur gagne dès qu'il aligne **4 pions** :
+    -   horizontalement
+    -   verticalement
+    -   diagonale ↘
+    -   diagonale ↙
+-   Plateau plein = **match nul**
+-   Bouton **Réinitialiser** → nouvelle partie synchronisée
 
-Les joueurs jouent chacun leur tour
+## 🧠 5. Système de rôles (WebSocket)
 
-Un joueur clique sur une colonne → le pion tombe tout en bas
+  Ordre de connexion   Rôle   Couleur         Peut jouer ?
+  -------------------- ------ --------------- --------------
+  1er client           R      🔴 Rouge        ✔️ Oui
+  2ème client          J      🟡 Jaune        ✔️ Oui
+  3ème+                S      👀 Spectateur   ❌ Non
 
-Le premier à aligner 4 pions :
+## 📝 6. Historique des coups
 
-horizontalement
+-   ⏳ **Heure de début**
 
-verticalement
+-   Chaque coup :
 
-en diagonale ↘
+        #3 : Joueur R → ligne 5, colonne 4
 
-en diagonale ↙
+-   🏆 **Fin de partie**
 
-Si le plateau est plein → match nul
+    -   gagnant (rouge / jaune)
+    -   ou **match nul**
 
-Le bouton Réinitialiser recommence une partie pour tous les joueurs
+## 🔧 7. Fichiers principaux
 
-🧠 5. Système de rôles (WebSocket)
+### `server.js`
 
-Le serveur attribue automatiquement les rôles :
+-   Crée le WebSocket (port 8080)
+-   Assigne automatiquement les rôles
+-   Relaye les messages `move` et `reset`
+-   Gère connexions/déconnexions
 
-Ordre de connexion	Rôle	Couleur	Peut jouer ?
-1er client	R	🔴 Rouge	✔️ Oui
-2ème client	J	🟡 Jaune	✔️ Oui
-3ème+	S	👀 Spectateur	❌ Non
+### `index.html`
 
-Les spectateurs voient la partie en direct mais ne peuvent pas jouer.
+-   plateau
+-   logique client
+-   gestion des tours
+-   WebSocket client
+-   historique
 
-📝 6. Historique des coups
+### `style.css`
 
-La colonne de droite affiche :
+-   styles du plateau
+-   couleurs des pions
+-   mise en page
+-   interface de l'historique
 
-⏳ Heure de début de partie
+## 🚀 8. Améliorations possibles
 
-Chaque coup joué :
+-   gestion automatique en cas de déconnexion
+-   salle d'attente + pseudos
+-   plusieurs parties en parallèle (lobby)
+-   IA (bot)
+-   animations de chute des pions
 
-#3 : Joueur R → ligne 5, colonne 4
+## 🎉 9. Résultat
 
-
-🏆 Fin de partie :
-
-Gagnant : joueur rouge / jaune
-
-ou match nul
-
-Le bouton Réinitialiser vide l’historique et démarre une nouvelle partie
-
-🔧 7. Fichiers principaux
-server.js
-
-Crée un WebSocket sur le port 8080
-
-Assigne automatiquement les rôles
-
-Relaye les coups (move) et les resets (reset) à tous les clients
-
-Gère les connexions/déconnexions
-
-index.html
-
-Contient :
-
-le plateau
-
-la logique client
-
-la gestion des tours
-
-la synchronisation WebSocket
-
-l’historique
-
-style.css
-
-Contient :
-
-le style du plateau
-
-les couleurs des pions
-
-la mise en page
-
-l'interface de l’historique
-
-🚀 8. Améliorations possibles
-
-Tu peux facilement ajouter :
-
-gestion automatique quand un joueur se déconecte
-
-salle d'attente / choix du pseudo
-
-multiple parties en parallèle (mode lobby)
-
-IA (bot) contre lequel jouer
-
-animation des pions qui tombent
-
-Si tu veux, je peux t’en coder une directement.
-
-🎉 9. Résultat
-
-Tu as maintenant un Puissance 4 multijoueur complet, jouable :
-
-en local sur un seul PC
-
-ou sur 2 PC via le réseau local
-
-avec rôles, historique, synchronisation temps réel
-
-et un vrai moteur de jeu avec alternance des tours
+Un **Puissance 4 multijoueur complet**, jouable en local ou réseau
+local, avec synchronisation en temps réel et moteur de jeu complet.
