@@ -25,9 +25,9 @@
         const NUM_ROWS = 6;
         const NUM_COLS = 7;
 
+        // 🔹 host = IP ou hostname qui sert la page, ou localhost si file://
         const host = location.hostname || "localhost";
         const ws = new WebSocket(`ws://${host}:8080`);
-
 
         const connectionEl = document.getElementById("connection");
         const statusEl = document.getElementById("status");
@@ -40,6 +40,9 @@
         );
         let currentPlayer = "R"; // R (rouge) commence
         let gameOver = false;
+
+        // 🔹 rôle de CE client : "R", "J" ou "S" (spectateur)
+        let myPlayer = null;
 
         // Historique des coups
         let moveHistory = [];
@@ -61,7 +64,6 @@
 
         // ---- WebSocket ----
         ws.onopen = () => {
-            connectionEl.textContent = "Connecté au serveur WebSocket";
             console.log("WebSocket connecté");
         };
 
@@ -77,6 +79,20 @@
 
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data);
+
+            // 🔹 Le serveur nous assigne un rôle : "R", "J" ou "S"
+            if (msg.type === "assign") {
+                myPlayer = msg.player;
+
+                if (myPlayer === 'R') {
+                    connectionEl.textContent = "Connecté – Vous êtes le joueur rouge (R)";
+                } else if (myPlayer === 'J') {
+                    connectionEl.textContent = "Connecté – Vous êtes le joueur jaune (J)";
+                } else {
+                    connectionEl.textContent = "Connecté – Vous êtes spectateur";
+                }
+                return; // on sort, ce n'est pas un coup
+            }
 
             if (msg.type === "info") {
                 console.log(msg.message);
@@ -95,6 +111,17 @@
         function handleColumnClick(col) {
             if (gameOver || ws.readyState !== WebSocket.OPEN) return;
 
+            // 🔹 Si on ne connaît pas encore notre rôle, ou spectateur → pas le droit de jouer
+            if (myPlayer === null || myPlayer === 'S') {
+                return;
+            }
+
+            // 🔹 Ce n'est pas notre tour → on ne joue pas
+            if (myPlayer !== currentPlayer) {
+                return;
+            }
+
+            // Si tout est OK : on envoie le coup au serveur
             ws.send(JSON.stringify({
                 type: "move",
                 col: col
